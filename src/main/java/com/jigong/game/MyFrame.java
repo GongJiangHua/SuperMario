@@ -72,6 +72,12 @@ public class MyFrame extends JFrame implements KeyListener, Runnable {
         graphics.drawImage(nowBg.getGan(), 500, 220, this);
         //绘制马里奥
         graphics.drawImage(mario.getShow(), mario.getX(), mario.getY(), this);
+        //添加分数
+        Color c = graphics.getColor();
+        graphics.setColor(Color.BLACK);
+        graphics.setFont(new Font("黑体",Font.BOLD,25));
+        graphics.drawString("当前的分数为："+mario.getScore(),300,100);
+        graphics.setColor(c);
         //将图片绘制到窗口中
         g.drawImage(offScreenImage, 0, 0, this);
     }
@@ -127,10 +133,15 @@ public class MyFrame extends JFrame implements KeyListener, Runnable {
                     mario.setX(10);
                     mario.setY(345);
                 }
+                //判断马里奥死否死亡
+                if (mario.isDeath()){
+                    JOptionPane.showMessageDialog(this,"你被敌人打败了！！");
+                    System.exit(0);
+                }
                 //判断游戏是否结束
                 if (mario.isOk()){
                     JOptionPane.showMessageDialog(this,"恭喜你成功通关了！");
-                    return;
+                    System.exit(0);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

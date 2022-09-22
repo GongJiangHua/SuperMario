@@ -74,7 +74,9 @@ public class Enemy implements Runnable{
     public void setShow(BufferedImage show) {
         this.show = show;
     }
-
+    public int getType() {
+        return type;
+    }
 
     @Override
     public void run() {

@@ -8,7 +8,6 @@ public class Mario implements Runnable {
     private int y;
     //用于表示当前的状态
     private String status;
-
     //用于显示当前状态对应的图像
     private BufferedImage show = null;
     //定义一个Background对象，用来获取障碍物的信息
@@ -21,11 +20,15 @@ public class Mario implements Runnable {
     private int ySpeed;
     //定义一个索引
     private int index;
+
     //表示马里奥的上升时间
     private int upTime = 0;
-
     //用于判断马里奥是否以及走到城堡门口
     private boolean isOk;
+    //用于判断马里奥是否死亡
+    private boolean isDeath = false;
+    //表示分数
+    private int score = 0;
     public Mario() {
     }
 
@@ -36,6 +39,11 @@ public class Mario implements Runnable {
         this.status = "stand-right";
         thread = new Thread(this);
         thread.start();
+    }
+
+    //马里奥死亡的方法
+    public void death(){
+        isDeath = true;
     }
 
     //马里奥向左移动
@@ -158,6 +166,7 @@ public class Mario implements Runnable {
                 if ((ob.getY() >= this.y - 30 && ob.getY() <= this.y - 20) && (ob.getX() > this.x - 30 && ob.getX() < this.x + 25)){
                     if (ob.getType() == 0){
                         backGround.getObstacleList().remove(ob);
+                        score += 1;
                     }
                     upTime = 0;
                 }
@@ -170,7 +179,24 @@ public class Mario implements Runnable {
                     canLeft = false;
                 }
             }
-
+            //判断马里奥是否碰到了敌人死亡或者踩死蘑菇敌人
+            for (int  i = 0;i < backGround.getEnemyList().size();i++){
+                Enemy e = backGround.getEnemyList().get(i);
+                if (e.getY() == this.y + 20 && (e.getX() - 25 <= this.x && e.getX() + 35 >= this.x)){
+                    if (e.getType() == 1){
+                        e.death();
+                        score += 2;
+                        upTime = 3;
+                        ySpeed = -10;
+                    }else if (e.getType() == 2){
+                        //马里奥死亡
+                        death();
+                    }
+                }
+                if ((e.getX() + 35 > this.x  && e.getX() - 25 < this.x) && (e.getY() + 35 > this.y && e.getY() - 20 < this.y)){
+                    death();
+                }
+            }
             //进行马里奥的跳跃操作
             if (onObstacle && upTime == 0) {
                 if (status.indexOf("left") != -1) {
@@ -267,5 +293,11 @@ public class Mario implements Runnable {
     }
     public boolean isOk() {
         return isOk;
+    }
+    public boolean isDeath() {
+        return isDeath;
+    }
+    public int getScore() {
+        return score;
     }
 }
