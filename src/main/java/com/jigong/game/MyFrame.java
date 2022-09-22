@@ -58,6 +58,10 @@ public class MyFrame extends JFrame implements KeyListener, Runnable {
         graphics.fillRect(0, 0, 800, 600);
         //绘制背景
         graphics.drawImage(nowBg.getBgImage(), 0, 0, this);
+        //绘制敌人
+        for (Enemy e : nowBg.getEnemyList()){
+            graphics.drawImage(e.getShow(),e.getX(),e.getY(),this);
+        }
         //绘制障碍物
         for (Obstacle ob : nowBg.getObstacleList()) {
             graphics.drawImage(ob.getShow(), ob.getX(), ob.getY(), this);

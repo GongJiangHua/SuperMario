@@ -14,6 +14,9 @@ public class BackGround {
 
     //用于存放我们所有的障碍物
     private List<Obstacle>  obstacleList = new ArrayList<>();
+
+    //用于存放我们所有的敌人
+    private List<Enemy> enemyList = new ArrayList<>();
     //用于显示旗杆
     private BufferedImage gan = null;
 
@@ -76,6 +79,10 @@ public class BackGround {
                     obstacleList.add(new Obstacle(645, i, 6, this));
                 }
             }
+            //绘制第一关的蘑菇敌人
+            enemyList.add(new Enemy(580,385,1,true,this));
+            //绘制第一关的食人花敌人
+            enemyList.add(new Enemy(635,420,2,true,this,328,428));
         }
 
         //判断是否是第2关
@@ -135,6 +142,14 @@ public class BackGround {
             for (int i = 360;i <= 540;i += 60){
                 obstacleList.add(new Obstacle(i,270,7,this));
             }
+            //绘制第二关的第一个食人花敌人
+            enemyList.add(new Enemy(75,420,2,true,this,328,418));
+            //绘制第二关的第二个食人花敌人
+            enemyList.add(new Enemy(635,420,2,true,this,298,388));
+            //绘制第二关的第一个蘑菇敌人
+            enemyList.add(new Enemy(200,385,1,true,this));
+            //绘制第二关的第二个蘑菇敌人
+            enemyList.add(new Enemy(500,385,1,true,this));
         }
         //判断是否是第三关
         if(sort == 3){
@@ -170,6 +185,8 @@ public class BackGround {
             tower = StaticValue.tower;
             //添加旗帜到旗杆上
             obstacleList.add(new Obstacle(515,220,8,this));
+            //绘制第三关的蘑菇敌人
+            enemyList.add(new Enemy(150,385,1,true,this));
         }
     }
 
@@ -208,4 +225,8 @@ public class BackGround {
     public void setBase(boolean base) {
         isBase = base;
     }
+    public List<Enemy> getEnemyList() {
+        return enemyList;
+    }
+
 }
