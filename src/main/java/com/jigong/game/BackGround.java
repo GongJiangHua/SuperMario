@@ -10,24 +10,29 @@ public class BackGround {
     //记录当前是第几个场景
     private int sort;
     //判断是否是最后一个场景
-    private Boolean flag;
-
+    private Boolean Flag = true;
 
     //用于存放我们所有的障碍物
     private List<Obstacle>  obstacleList = new ArrayList<>();
     //用于显示旗杆
     private BufferedImage gan = null;
 
-
     //用于显示城堡
     private BufferedImage tower = null;
+
+    //判断马里奥是否到达了旗杆的位置
+    boolean isReach = false;
+
+
+    //判断旗帜是否落地
+    boolean isBase = false;
     public BackGround() {
 
     }
 
     public BackGround(int sort, Boolean flag) {
         this.sort = sort;
-        this.flag = flag;
+        this.Flag = flag;
         if (flag) {
             bgImage = StaticValue.bg2;
         } else {
@@ -176,8 +181,8 @@ public class BackGround {
         return sort;
     }
 
-    public Boolean getFlag() {
-        return flag;
+    public Boolean IsFlag() {
+        return Flag;
     }
     public List<Obstacle> getObstacleList() {
         return obstacleList;
@@ -188,5 +193,19 @@ public class BackGround {
 
     public BufferedImage getTower() {
         return tower;
+    }
+    public boolean isReach() {
+        return isReach;
+    }
+
+    public void setReach(boolean reach) {
+        isReach = reach;
+    }
+    public boolean isBase() {
+        return isBase;
+    }
+
+    public void setBase(boolean base) {
+        isBase = base;
     }
 }

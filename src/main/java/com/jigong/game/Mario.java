@@ -23,6 +23,9 @@ public class Mario implements Runnable {
     private int index;
     //表示马里奥的上升时间
     private int upTime = 0;
+
+    //用于判断马里奥是否以及走到城堡门口
+    private boolean isOk;
     public Mario() {
     }
 
@@ -39,6 +42,10 @@ public class Mario implements Runnable {
     public void leftMove() {
         //改变速度
         xSpeed = -5;
+        //判断马里奥是否碰到了旗帜
+        if (backGround.isReach){
+            xSpeed = 0;
+        }
         //判断马里奥是否在空中
         if (status.indexOf("jump") != -1) {
             status = "jump--left";
@@ -46,9 +53,14 @@ public class Mario implements Runnable {
             status = "move--left";
         }
     }
+
     //马里奥向右移动
     public void rightMove() {
         xSpeed = 5;
+        //判断马里奥是否碰到了旗帜
+        if (backGround.isReach){
+            xSpeed = 0;
+        }
         if (status.indexOf("jump") != -1) {
             status = "jump--right";
         } else {
@@ -77,45 +89,114 @@ public class Mario implements Runnable {
     }
 
     //马里奥跳跃
-    public void jump(){
-        if (status.indexOf("jump") == -1){
-            if (status.indexOf("left") == -1){
-                status = "jump--left";
-            }else {
+    public void jump() {
+        if (status.indexOf("jump") == -1) {
+            if (status.indexOf("left") == -1) {
                 status = "jump--right";
+            } else {
+                status = "jump--left";
             }
             ySpeed = -10;
             upTime = 7;
         }
+        //判断马里奥是否碰到了旗帜
+        if (backGround.isReach){
+            ySpeed = 0;
+        }
     }
 
-    public void fail(){
-        if (status.indexOf("left") == -1){
+    //马里奥下落
+    public void fail() {
+        if (status.indexOf("right") == -1) {
             status = "jump--left";
-        }else {
+        } else {
             status = "jump--right";
         }
         ySpeed = 10;
     }
+
     @Override
     public void run() {
         while (true) {
             //判断是否处于障碍物上
             boolean onObstacle = false;
-            //遍历当前场景内的所有障碍物
-            for (int i = 0;i < backGround.getObstacleList().size();i++){
-                Obstacle ob = backGround.getObstacleList().get(i);
-                //判断马里奥是否处于障碍物上
-                if (ob.getY() == this.y+25 && (ob.getX() > this.x-30 && ob.getX() < this.x+25)){
-                    onObstacle = true;
+            //判断是否可以向右走
+            boolean canRight = true;
+            //判断是否可以向左走
+            boolean canLeft = true;
+            //判断马里奥是否到达了旗杆位置
+            if (backGround.IsFlag() && this.x >= 500){
+                this.backGround.setReach(true);
+                //判断旗帜是否下落完成
+                if (this.backGround.isBase()){
+                    status = "move--right";
+                    if (x < 690){
+                        x += 5;
+                    }else {
+                        isOk = true;
+                    }
+                }else {
+                    if (y < 395){
+                        xSpeed = 0;
+                        this.y += 5;
+                        status = "jump--rught";
+                    }
+                    if (y > 395){
+                        this.y = 395;
+                        status = "stop--right";
+                    }
                 }
             }
+            //遍历当前场景内的所有障碍物
+            for (int i = 0; i < backGround.getObstacleList().size(); i++) {
+                Obstacle ob = backGround.getObstacleList().get(i);
+                //判断马里奥是否处于障碍物上
+                if (ob.getY() == this.y + 25 && (ob.getX() > this.x - 30 && ob.getX() < this.x + 25)) {
+                    onObstacle = true;
+                }
+                //判断跳起来是否顶到了砖块
+                if ((ob.getY() >= this.y - 30 && ob.getY() <= this.y - 20) && (ob.getX() > this.x - 30 && ob.getX() < this.x + 25)){
+                    if (ob.getType() == 0){
+                        backGround.getObstacleList().remove(ob);
+                    }
+                    upTime = 0;
+                }
+                //判断马里奥是否可以向右走
+                if (ob.getX() == this.x + 25 && (ob.getY() > this.y - 30 && ob.getY() < this.y +25)){
+                    canRight = false;
+                }
+                //判断马里奥是否可以向左走
+                if (ob.getX() == this.x - 30 && (ob.getY() > this.y - 30 && ob.getY() < this.y +25)){
+                    canLeft = false;
+                }
+            }
+
             //进行马里奥的跳跃操作
-
-
-            if (xSpeed < 0 || xSpeed > 0) {
+            if (onObstacle && upTime == 0) {
+                if (status.indexOf("left") != -1) {
+                    if (xSpeed != 0) {
+                        status = "move--left";
+                    } else {
+                        status = "stop--left";
+                    }
+                } else {
+                    if (xSpeed != 0) {
+                        status = "move--right";
+                    } else {
+                        status = "stop--right";
+                    }
+                }
+            } else {
+                if (upTime != 0) {
+                    upTime--;
+                } else {
+                    fail();
+                }
+                y += ySpeed;
+            }
+            //判断马里奥是否到达了最左边
+            if (canLeft && xSpeed < 0 || (canRight && xSpeed > 0)) {
                 x += xSpeed;
-                //判断马里奥是否到达了最左边
                 if (x < 0) {
                     x = 0;
                 }
@@ -146,11 +227,11 @@ public class Mario implements Runnable {
                 e.printStackTrace();
             }
             //判断是否是向左跳跃
-            if ("jump--left".equals(status)){
+            if ("jump--left".equals(status)) {
                 show = StaticValue.jump_L;
             }
             //判断是否是向右跳跃
-            if ("jump--right".equals(status)){
+            if ("jump--right".equals(status)) {
                 show = StaticValue.jump_R;
             }
         }
@@ -180,7 +261,11 @@ public class Mario implements Runnable {
     public void setShow(BufferedImage show) {
         this.show = show;
     }
+
     public void setBackGround(BackGround backGround) {
         this.backGround = backGround;
+    }
+    public boolean isOk() {
+        return isOk;
     }
 }

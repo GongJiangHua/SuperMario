@@ -36,7 +36,7 @@ public class MyFrame extends JFrame implements KeyListener, Runnable {
         //初始化图片
         StaticValue.init();
         //初始化马里奥
-        mario = new Mario(10, 395);
+        mario = new Mario(10, 345);
         //创建全部的场景
         for (int i = 1; i <= 3; i++) {
             allBg.add(new BackGround(i, i == 3 ? true : false));
@@ -92,6 +92,10 @@ public class MyFrame extends JFrame implements KeyListener, Runnable {
         if (e.getKeyCode() == 37) {
             mario.leftMove();
         }
+        //向上跳跃
+        if (e.getKeyCode() == 38){
+            mario.jump();
+        }
     }
 
     //当键盘松开按键时调用
@@ -117,7 +121,12 @@ public class MyFrame extends JFrame implements KeyListener, Runnable {
                     nowBg = allBg.get(nowBg.getSort());
                     mario.setBackGround(nowBg);
                     mario.setX(10);
-                    mario.setY(395);
+                    mario.setY(345);
+                }
+                //判断游戏是否结束
+                if (mario.isOk()){
+                    JOptionPane.showMessageDialog(this,"恭喜你成功通关了！");
+                    return;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
